@@ -8,48 +8,33 @@ News
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
 <!--<h1>{{ news }}</h1>-->
-   <h1> Новостей: {{ news|length }}</h1>
+   <h1> Новостей: {{ category_news_list|length }}</h1>
 <!--   <h3>{{ time_now|date:'M d Y' }}</h3>-->
    <!-- Если в переменной next_sale будет None,
    то выведется указанный в фильтре текст -->
 <!--   <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>-->
-
-    {# Теперь будем проверять не request.user.is_authenticated, а конкретные права #}
-    {% if perms.simpleapp.add_news %}
-    <a href="{% url 'news_create' %}">Добавить новость</a>
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Подписаться</a></p>
     {% endif %}
 
    <hr>
-   {% if news %}
+   {% if category_news_list %}
 
-
-
-        <ul class="list-group-flush">
-           {% for new in news|dictsort:"dateCreation" %}
-                <li class="list-group-item">
-            <small class="fw-bold">{{ new.dateCreation|date:'d M Y' }}</small>
-                       <small class="fw-bold">{{ new.title|censor }}&nbsp;</small>
-                    <small class="fw-bold">категории:
-
-                            {% for category in new.category.all %}
-                            <a href="{% url 'category_list' category.id %}"> {{ category }}</a>
-                        {% endfor %}
-                        </small>
-                     <p>{{ new.text|censor|truncatechars:20}}</p>
-                </li>
-        </ul>
+           {% for newspost in category_news_list|dictsort:"dateCreation" %}
+           <table>
+                 <tr>
                     <td>
-                        {# А здесь доступ для каждой ссылки теперь будем проверять отдельно #}
-                        {% if perms.simpleapp.change_news %}
-                        <a href="{% url 'news_update' pk=new.id %}">Изменить</a>
-                        {% endif %}
-                        {% if perms.simpleapp.delete_news %}
-                        <a href="{% url 'news_delete' pk=new.id %}">Удалить</a>
-                        {% endif %}
+                     <p>
+                       <span>{{ newspost.dateCreation|date:'d M Y' }}</span>
+                       <strong>{{ newspost.title|censor }}</strong></p>
                     </td>
+                     <td><p><em>{{ newspost.text|censor|truncatechars:20}}</em></p></td>
+                     {% for category in newspost.category.all %}
+                     <a href="{% url 'category_list' category.id %}"> {{ category }}</a>
+                     {% endfor %}
                 </tr>
-            {% endfor %}
-
+            </table>
+           {% endfor %}
 
    {% else %}
        <h2>Новостей нет, но вы держитесь!</h2>

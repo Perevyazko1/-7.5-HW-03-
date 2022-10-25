@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.yandex',
     'django.contrib.flatpages',
     'news',
-    'simpleapp',
+    'simpleapp.apps.SimpleappConfig',
     'django_filters',
 ]
 SITE_ID = 1

@@ -1,12 +1,13 @@
 # Импортируем класс, который говорит нам о том,
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .forms import NewsForm
-from .models import News
-from  .filters import NewsFilter
-
+from .models import News, NewsCategory
+from .filters import NewsFilter
 
 
 class NewsList(ListView):
@@ -20,9 +21,7 @@ class NewsList(ListView):
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'news'
-    paginate_by = 10 # регулируем количество записей на странице
-
-
+    paginate_by = 10  # регулируем количество записей на странице
 
 
 class NewsDetail(DetailView):
@@ -40,7 +39,6 @@ class NewsSearch(ListView):
     template_name = 'search.html'
     context_object_name = 'news'
     paginate_by = 10
-
 
     def get_queryset(self):
         # Получаем обычный запрос
@@ -75,7 +73,7 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
 
 
 # Добавляем представление для изменения товара.
-class NewsUpdate(PermissionRequiredMixin,UpdateView):
+class NewsUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = ('simpleapp.change_news',)
     form_class = NewsForm
     model = News
@@ -83,8 +81,42 @@ class NewsUpdate(PermissionRequiredMixin,UpdateView):
 
 
 # Представление удаляющее товар.
-class NewsDelete(PermissionRequiredMixin,DeleteView):
+class NewsDelete(PermissionRequiredMixin, DeleteView):
     permission_required = ('simpleapp.delete_news',)
     model = News
     template_name = 'delete_news.html'
     success_url = reverse_lazy('news_list')
+
+
+class CategoryList(ListView):
+    model = News
+    # Поле, которое будет использоваться для сортировки объектов
+    ordering = 'category'
+    # Указываем имя шаблона, в котором будут все инструкции о том,
+    # как именно пользователю должны быть показаны наши объекты
+    template_name = 'category_list.html'
+    # Это имя списка, в котором будут лежать все объекты.
+    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
+    context_object_name = 'category_news_list'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(NewsCategory, id=self.kwargs['pk'])
+        queryset = News.objects.filter(category=self.category).order_by('-dateCreation')
+        print(self.category)
+        print(queryset)
+        return queryset
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+    #     context['category'] = self.category
+    #     return context
+
+
+# @login_required  # проверка зареган ли user
+# def subscribe(request, pk):
+#     user = request.user
+#     category = NewsCategory.objects.get(id=pk)
+#     category.subscribers.add(user)
+#     message = 'Вы успешно подписались на рассылку новостей категории'
+#     return render(request, 'news/subscribe.html', {'category': category, 'message': message})
