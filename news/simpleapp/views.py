@@ -1,6 +1,7 @@
 # Импортируем класс, который говорит нам о том,
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -8,7 +9,9 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import NewsForm
 from .models import News, NewsCategory
 from .filters import NewsFilter
-
+from django.core.mail import EmailMultiAlternatives  # импортируем класс для создание объекта письма с html
+from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
+from django.conf import settings
 
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -108,9 +111,6 @@ class CategoryList(ListView):
         context = super().get_context_data(**kwargs)
         context['is_not_subscriber'] = self.request.user not in self.category.subscribes.all()
         context['category'] = self.category
-        print(context['is_not_subscriber'])
-        print(context['category'])
-
         return context
 
 
@@ -120,4 +120,7 @@ def subscribe(request, pk):
     category = NewsCategory.objects.get(id=pk)
     category.subscribes.add(user)
     message = 'Вы успешно подписались на рассылку новостей категории'
+
+
     return render(request, 'subscribe.html', {'category': category, 'message': message})
+

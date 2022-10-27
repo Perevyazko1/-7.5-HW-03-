@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django_filters',
 ]
 SITE_ID = 1
-
+SITE_URL = 'http://127.0.0.1:8000'
 LOGIN_REDIRECT_URL = "/news"
 
 # Этого раздела может не быть, добавьте его в указанном виде.
@@ -148,3 +148,11 @@ ACCOUNT_UNIQUE_EMAIL = True  # email является  уникальным
 ACCOUNT_USERNAME_REQUIRED = False  # username необязательный
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # аутентификация будет происходить посредством электронной почты
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # верификация почты отсутствует
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'  # адрес сервера Яндекс-почты для всех один и тот же
+EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
+EMAIL_HOST_USER = 'news.portal@inbox.ru'  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
+EMAIL_HOST_PASSWORD = 'LDiYuyCjy9BQhGzTP9wr'  # пароль от почты
+EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
+DEFAULT_FROM_EMAIL = 'news.portal@inbox.ru'

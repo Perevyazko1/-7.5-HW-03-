@@ -33,11 +33,17 @@ class News(models.Model):
     category = models.ManyToManyField(NewsCategory,through='Postcategory')
     title = models.CharField(max_length=128, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
-    def __str__(self):
-        return f'{self.title}| {self.text[:20]}'
 
     def get_absolute_url(self):
         return reverse('news_detail', args=[str(self.id)])
+
+    def preview(self):
+        preview = self.text[0:124] + '...'
+        return preview
+
+    def __str__(self):
+        return f'{self.title}| {self.text[:20]}'
+
 
 
 
