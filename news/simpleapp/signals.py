@@ -1,10 +1,10 @@
 from django.core.mail import EmailMultiAlternatives
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
 from django.conf import settings
-from .models import PostCategory
+from .models import PostCategory,User
 
 
 def send_notifications(preview,id, title, subscribes ):
@@ -22,7 +22,6 @@ def send_notifications(preview,id, title, subscribes ):
     for user, first_name, email, category in send_list:
             # получаем наш html
             to_email = [email]
-            print(to_email)
             html_content = render_to_string(
                 'post_created.html',
                 {
@@ -47,7 +46,7 @@ def notify_about_new_post(sender, instance, **kwargs):
     if kwargs['action'] == 'post_add':
         categories = instance.category.all()
         subscribes: list[str] = []
-        users: list[str] = []
+        # users: list[str] = []
         for category in categories:
             subscribes += category.subscribes.all()
         # users = [s.username for s in subscribes]
@@ -55,3 +54,41 @@ def notify_about_new_post(sender, instance, **kwargs):
         # print(users)
         # print(subscribes)
         send_notifications(instance.preview, instance.id, instance.title, subscribes)
+
+
+
+def send_new_user(user, email ):
+        html_content = render_to_string(
+            'new_user.html',
+            {
+                'link': f'{settings.SITE_URL}/accounts/login/',
+                'user': user,
+            }
+        )
+        message = EmailMultiAlternatives(
+            subject= 'Регистрация',
+            body='',  # это то же, что и message
+            from_email= 'news.portal@inbox.ru',
+            to= email,  # это то же, что и recipients_list
+
+        )
+        message.attach_alternative(html_content, 'text/html')  # добавляем html
+        message.send()  # отсылаем
+
+
+
+@receiver(post_save, sender=User)
+def hello_new_user(sender, instance,created, **kwargs):
+    if created:
+        email = [instance.email]
+        user = instance
+        # user: list[str] = []
+        # email: list[str] = []
+        # for new_user in user:
+        #     user += new_user.user.all()
+        # user = [s.first_name for s in user]
+        # email = [s.email for s in user]
+        # send_new_user(instance.id, user)
+        # print(user)
+        # print(email)
+        send_new_user(user,email)
