@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+   <meta charset="UTF-8">
+</head>
+<body>
+   <h2>Здравствуй, . Новости за неделю.  </h2>
+   <ul>
+      {% for news in all_news %}
+         <li><a href="{{ link }}{{ news.get_absolute_url }}">{{ news.title }}</a></li>
+      {% endfor %}
+   </ul>
+</body>
+</html>

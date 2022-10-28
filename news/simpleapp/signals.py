@@ -34,7 +34,7 @@ def send_notifications(preview,id, title, subscribes ):
             msg = EmailMultiAlternatives(
                 subject= title,
                 body='',  # это то же, что и message
-                from_email= 'news.portal@inbox.ru',
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 to= to_email,  # это то же, что и recipients_list
 
             )
@@ -68,7 +68,7 @@ def send_new_user(user, email ):
         message = EmailMultiAlternatives(
             subject= 'Регистрация',
             body='',  # это то же, что и message
-            from_email= 'news.portal@inbox.ru',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to= email,  # это то же, что и recipients_list
 
         )

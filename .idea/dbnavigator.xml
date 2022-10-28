@@ -39,6 +39,7 @@
     <connection id="31bbc23b-106a-456b-9af2-8a572a0c71fe" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="31bbc23b-106a-456b-9af2-8a572a0c71fe" dataset="main.account_emailaddress" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="31bbc23b-106a-456b-9af2-8a572a0c71fe" dataset="main.simpleapp_newscategory" active-filter-id="1433788f-58ac-4ced-9ccb-b86f30df06ef">
       <filter id="1433788f-58ac-4ced-9ccb-b86f30df06ef" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="id" operator="=" value="" active="true" />
