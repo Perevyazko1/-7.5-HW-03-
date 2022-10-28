@@ -82,13 +82,4 @@ def hello_new_user(sender, instance,created, **kwargs):
     if created:
         email = [instance.email]
         user = instance
-        # user: list[str] = []
-        # email: list[str] = []
-        # for new_user in user:
-        #     user += new_user.user.all()
-        # user = [s.first_name for s in user]
-        # email = [s.email for s in user]
-        # send_new_user(instance.id, user)
-        # print(user)
-        # print(email)
         send_new_user(user,email)

@@ -27,6 +27,7 @@ def my_job():
     all_news = News.objects.filter(dateCreation__gte=last_week)
     categories = set(all_news.values_list('category__name', flat=True))
     subscribes = set(NewsCategory.objects.filter(name__in=categories).values_list('subscribes__email', flat=True))
+    subscribes = list(filter(None,subscribes))
     print(subscribes)
     html_content = render_to_string(
         'news_week.html',
@@ -39,7 +40,7 @@ def my_job():
         subject='Статьи за неделю',
         body='',  # это то же, что и message
         from_email= settings.DEFAULT_FROM_EMAIL,
-        to=['a.perevyazko@icloud.com'],  # это то же, что и recipients_list
+        to=subscribes,  # это то же, что и recipients_list
 
     )
     msg.attach_alternative(html_content, 'text/html')  # добавляем html
@@ -62,7 +63,7 @@ class Command(BaseCommand):
         # добавляем работу нашему задачнику
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(second="*/5"),
+            trigger=CronTrigger(day_of_week="mon", hour="10", minute="00"),
             # То же, что и интервал, но задача тригера таким образом более понятна django
             id="my_job",  # уникальный айди
             max_instances=1,
