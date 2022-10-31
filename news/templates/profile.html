@@ -3,6 +3,12 @@
 
 {% block content %}
 
-<h1 class="text-center">{{user.id}}</h1>
+<h1>{{profile}}</h1>
+<h2>{{email}}</h2>
+    {% if is_author %}
+        <p class="text-center">Автор</p>
 
+    {% else %}
+        <p class="text-center">Пользователь</p>
+    {% endif %}
 {% endblock content %}

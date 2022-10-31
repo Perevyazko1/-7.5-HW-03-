@@ -20,10 +20,14 @@ class Profile(ListView):
     template_name = 'profile.html'
     context_object_name = 'user'
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['is_not_author'] = self.request.user not in self.user.all()
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_author'] = Author.objects.filter(authorUser_id=self.request.user.id).exists()
+        context['profile'] = self.request.user
+        context['email'] = self.request.user.email
+        print(Author.objects.filter(authorUser_id=self.request.user.id).exists())
+        # context['save_author'] = Author.objects.create(authorUser_id=self.request.user.id)
+        return context
 
 
 class NewsList(ListView):
