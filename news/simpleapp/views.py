@@ -1,17 +1,30 @@
 # Импортируем класс, который говорит нам о том,
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .forms import NewsForm
-from .models import News, NewsCategory
+from .models import News, NewsCategory, Author
 from .filters import NewsFilter
 from django.core.mail import EmailMultiAlternatives  # импортируем класс для создание объекта письма с html
 from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
 from django.conf import settings
+
+
+class Profile(ListView):
+    model = User
+    template_name = 'profile.html'
+    context_object_name = 'user'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['is_not_author'] = self.request.user not in self.user.all()
+    #     return context
+
 
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -74,6 +87,17 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
     # и новый шаблон, в котором используется форма.
     template_name = 'edit_news.html'
 
+    def form_valid(self, form):  # Переопределение метода при валидации формы NewsForm
+
+        self.object = form.save(commit=False
+                                )  # object - экземпляр заполненной формы NewsForm из запроса POST. В БД не сохраняем
+        self.object.author = Author.objects.get(
+            authorUser__username=self.request.user
+        )  # Назначяем полю author модели News экзамеляр модели Author, где пользователь-автор совпадает с
+        # пользователем-юзер
+        return super().form_valid(
+            form)  # Вызываем метод в родительском классе с измененной формой (а именно - определение поля author)
+
 
 # Добавляем представление для изменения товара.
 class NewsUpdate(PermissionRequiredMixin, UpdateView):
@@ -121,6 +145,4 @@ def subscribe(request, pk):
     category.subscribes.add(user)
     message = 'Вы успешно подписались на рассылку новостей категории'
 
-
     return render(request, 'subscribe.html', {'category': category, 'message': message})
-

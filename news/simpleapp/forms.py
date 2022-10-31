@@ -1,19 +1,18 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import News
+from .models import News, Author
 
 
 class NewsForm(forms.ModelForm):
     title = forms.CharField(max_length=30)
-
     class Meta:
         model = News
         fields = [
             'title',
             'text',
             'category',
-            'categoryType'
+            'categoryType',
 
         ]
 
