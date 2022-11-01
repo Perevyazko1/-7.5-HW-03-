@@ -7,8 +7,7 @@
 <h2>{{email}}</h2>
     {% if is_author %}
         <p class="text-center">Автор</p>
-
     {% else %}
-        <p class="text-center">Пользователь</p>
+        <p class="text-center"><a href="{% url 'new_author'  %}" class="btn btn-secondary btn-sm">Стать автором</a></p>
     {% endif %}
 {% endblock content %}

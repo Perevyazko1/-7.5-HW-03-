@@ -1,12 +1,11 @@
 # Импортируем класс, который говорит нам о том,
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-
 from .forms import NewsForm
 from .models import News, NewsCategory, Author
 from .filters import NewsFilter
@@ -26,7 +25,6 @@ class Profile(ListView):
         context['profile'] = self.request.user
         context['email'] = self.request.user.email
         print(Author.objects.filter(authorUser_id=self.request.user.id).exists())
-        # context['save_author'] = Author.objects.create(authorUser_id=self.request.user.id)
         return context
 
 
@@ -100,7 +98,8 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
         )  # Назначяем полю author модели News экзамеляр модели Author, где пользователь-автор совпадает с
         # пользователем-юзер
         return super().form_valid(
-            form)  # Вызываем метод в родительском классе с измененной формой (а именно - определение поля author)
+            form)
+  # Вызываем метод в родительском классе с измененной формой (а именно - определение поля author)
 
 
 # Добавляем представление для изменения товара.
@@ -146,7 +145,20 @@ class CategoryList(ListView):
 def subscribe(request, pk):
     user = request.user
     category = NewsCategory.objects.get(id=pk)
+    print(category)
     category.subscribes.add(user)
     message = 'Вы успешно подписались на рассылку новостей категории'
 
     return render(request, 'subscribe.html', {'category': category, 'message': message})
+
+
+@login_required  # проверка зареган ли user
+def save_author(request):
+    user = User.objects.get(id=request.user.id)
+    print(user)
+    message = 'Поздравляю вы теперь автор!'
+
+    group = Group.objects.get(id=1)
+    user.groups.add(group)
+    Author.objects.create(authorUser_id=user.id)
+    return render(request, 'save_author.html', {'message': message})
