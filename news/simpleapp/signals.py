@@ -5,41 +5,8 @@ from django.template.loader import render_to_string
 
 from django.conf import settings
 from .models import PostCategory,User
+from .tasks import send_notifications
 
-
-def send_notifications(preview,id, title, subscribes ):
-    send_list = list(
-        PostCategory.objects.filter(
-            postThrough_id=id
-        ).values_list(
-            'categoryThrough__subscribes__username',
-            'categoryThrough__subscribes__first_name',
-            'categoryThrough__subscribes__email',
-            'categoryThrough__name',
-        )
-    )
-
-    for user, first_name, email, category in send_list:
-            # получаем наш html
-            to_email = [email]
-            html_content = render_to_string(
-                'post_created.html',
-                {
-                    'text': preview,
-                    'link': f'{settings.SITE_URL}/news/{id}',
-                    'title': title,
-                    'user': user,
-                }
-            )
-            msg = EmailMultiAlternatives(
-                subject= title,
-                body='',  # это то же, что и message
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to= to_email,  # это то же, что и recipients_list
-
-            )
-            msg.attach_alternative(html_content, 'text/html')  # добавляем html
-            msg.send()  # отсылаем
 
 @receiver(m2m_changed, sender=PostCategory)
 def notify_about_new_post(sender, instance, **kwargs):
@@ -53,7 +20,7 @@ def notify_about_new_post(sender, instance, **kwargs):
         # subscribes = [s.email for s in subscribes]
         # print(users)
         # print(subscribes)
-        send_notifications(instance.preview, instance.id, instance.title, subscribes)
+        send_notifications.delay( instance.id, instance.title, instance.text)
 
 
 

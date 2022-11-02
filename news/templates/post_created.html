@@ -6,6 +6,6 @@
 </head>
 <body>
    <h2>Здравствуй, {{ user }}. Новая  <a href="{{ link }}"> статья </a> в твоём любимом разделе  </h2>
-   <p>{{ text }}</p>
+   <p>{{ text|truncatechars:50 }}</p>
 </body>
 </html>
