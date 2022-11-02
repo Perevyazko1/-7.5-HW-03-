@@ -51,23 +51,32 @@ def send_subscribe():
     last_week = today - datetime.timedelta(days=7)
     all_news = News.objects.filter(dateCreation__gte=last_week)
     categories = set(all_news.values_list('category__name', flat=True))
-    subscribes = set(NewsCategory.objects.filter(name__in=categories).values_list('subscribes__email', flat=True))
-    subscribes = list(filter(None,subscribes))
-    user = set(NewsCategory.objects.filter(name__in=categories).values_list('subscribes__username', flat=True))
-    html_content = render_to_string(
-        'news_week.html',
-        {
-            'link': settings.SITE_URL,
-            'all_news': all_news,
-            'user': user,
-        }
-    )
-    msg = EmailMultiAlternatives(
-        subject='Статьи за неделю',
-        body='',  # это то же, что и message
-        from_email= settings.DEFAULT_FROM_EMAIL,
-        to=subscribes,  # это то же, что и recipients_list
 
+
+    send_list = list(
+        NewsCategory.objects.filter(
+            name__in=categories
+        ).values_list(
+            'subscribes__email',
+            'subscribes__username',
+        )
     )
-    msg.attach_alternative(html_content, 'text/html')  # добавляем html
-    msg.send()  # отсылаем
+    for subscribes, user, in send_list:
+        subscribes = [subscribes]
+        html_content = render_to_string(
+            'news_week.html',
+            {
+                'link': settings.SITE_URL,
+                'all_news': all_news,
+                'user': user,
+            }
+        )
+        msg = EmailMultiAlternatives(
+            subject='Статьи за неделю',
+            body='',  # это то же, что и message
+            from_email= settings.DEFAULT_FROM_EMAIL,
+            to=subscribes,  # это то же, что и recipients_list
+
+        )
+        msg.attach_alternative(html_content, 'text/html')  # добавляем html
+        msg.send()  # отсылаем

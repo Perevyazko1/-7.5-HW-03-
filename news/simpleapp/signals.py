@@ -28,7 +28,7 @@ def send_new_user(user, email ):
         html_content = render_to_string(
             'new_user.html',
             {
-                'link': f'{settings.SITE_URL}/accounts/login/',
+                'link': f'{settings.SITE_URL}/news/profile/',
                 'user': user,
             }
         )
