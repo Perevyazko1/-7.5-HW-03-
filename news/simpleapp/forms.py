@@ -6,6 +6,7 @@ from .models import News, Author
 
 class NewsForm(forms.ModelForm):
     title = forms.CharField(max_length=30)
+
     class Meta:
         model = News
         fields = [
