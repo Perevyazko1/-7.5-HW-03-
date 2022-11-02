@@ -23,12 +23,17 @@ class NewsForm(forms.ModelForm):
 
         if text is not None and len(text) < 10:
             raise ValidationError({
-                "text": "Заголовок не может быть менее 10 символов."
+                "text": "Текст не может быть менее 10 символов."
             })
 
         if title == text:
             raise ValidationError(
                 "Описание не должно быть идентично названию."
             )
+
+        if title is not None and len(title) < 128:
+            raise ValidationError({
+                "text": "Заголовок не может быть более 128 символов."
+            })
 
         return cleaned_data
