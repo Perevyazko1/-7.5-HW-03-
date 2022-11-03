@@ -57,7 +57,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 SITE_URL = 'http://127.0.0.1:8000'
 LOGIN_REDIRECT_URL = "/news"
-
+LOGOUT_REDIRECT_URL ="/news"
 # Этого раздела может не быть, добавьте его в указанном виде.
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

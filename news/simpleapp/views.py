@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -15,6 +16,7 @@ from django.conf import settings
 
 
 class Profile(ListView):
+    raise_exception = True
     model = User
     template_name = 'profile.html'
     context_object_name = 'user'
@@ -105,6 +107,7 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
 # Добавляем представление для изменения товара.
 class NewsUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = ('simpleapp.change_news',)
+
     form_class = NewsForm
     model = News
     template_name = 'edit_news.html'
@@ -162,3 +165,5 @@ def save_author(request):
     user.groups.add(group)
     Author.objects.create(authorUser_id=user.id)
     return render(request, 'save_author.html', {'message': message})
+
+
