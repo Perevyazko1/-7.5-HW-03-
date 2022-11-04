@@ -2,10 +2,14 @@
 {% load custom_filters %}
 <!-- Название у нас будет Product -->
 
+<html>
+
+  <meta charset="utf-8">
+
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
 <!--<h1>{{ news }}</h1>-->
-   <h1> {{ news.title|censor }} </h1>
+   <h2> {{ news.title|censor }} </h2>
 <!--   <h3>{{ time_now|date:'M d Y' }}</h3>-->
    <!-- Если в переменной next_sale будет None,
    то выведется указанный в фильтре текст -->
@@ -15,14 +19,15 @@
    {% if news %}
 
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
-        <h1>{{ news.text|censor }}</h1>
+        <h4>{{ news.text|censor }}</h4>
 
-        <h2>{{news.dateCreation|date:'d M Y'}}</h2>
+        <h4>{{news.dateCreation|date:'d M Y'}}</h4>
 
 
    {% else %}
        <h2>Новостей нет, но вы держитесь!</h2>
    {% endif %}
 
-    <p><a href="https://www.ya.ru" target="_blank" title="я">Яндекс</a></p>
+    <footer><a href="https://www.ya.ru" target="_blank" title="я">Яндекс</a></footer>
+
 {% endblock content %}

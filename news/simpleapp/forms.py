@@ -5,7 +5,7 @@ from .models import News, Author
 
 
 class NewsForm(forms.ModelForm):
-    title = forms.CharField(max_length=30)
+    title = forms.CharField(max_length=128)
 
     class Meta:
         model = News
@@ -32,7 +32,7 @@ class NewsForm(forms.ModelForm):
                 "Описание не должно быть идентично названию."
             )
 
-        if title is not None and len(title) < 128:
+        if title is not None and len(title) > 128:
             raise ValidationError({
                 "text": "Заголовок не может быть более 128 символов."
             })
