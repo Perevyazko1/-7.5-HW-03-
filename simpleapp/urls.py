@@ -1,10 +1,11 @@
 from django.urls import path
 # Импортируем созданные нами представления
 from .views import NewsList, NewsDetail, NewsSearch, NewsCreate, NewsUpdate, NewsDelete, CategoryList, subscribe, \
-   Profile, save_author
+   Profile, save_author, like_post_view
 
 urlpatterns = [
    path('<int:pk>', NewsDetail.as_view()),
+   path('<int:post_pk>/like', like_post_view, name='like-post'),
    path('search/', NewsSearch.as_view()),
    path('', NewsList.as_view(), name='news_list'),
    path('<int:pk>', NewsDetail.as_view(), name='news_detail'),

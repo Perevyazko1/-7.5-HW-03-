@@ -1,16 +1,13 @@
 # Импортируем класс, который говорит нам о том,
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
-from django.core.mail import send_mail
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .forms import NewsForm
 from .models import News, NewsCategory, Author
 from .filters import NewsFilter
-from django.core.mail import EmailMultiAlternatives  # импортируем класс для создание объекта письма с html
 from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
 from django.conf import settings
 
@@ -42,6 +39,11 @@ class NewsList(ListView):
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'news'
     paginate_by = 10  # регулируем количество записей на странице
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = NewsCategory.objects.all()
+        return context
 
 
 class NewsDetail(DetailView):
@@ -167,3 +169,9 @@ def save_author(request):
     return render(request, 'save_author.html', {'message': message})
 
 
+@login_required
+def like_post_view(request, post_pk):
+    if request.method == 'GET':
+        post = News.objects.get(pk=post_pk)
+        post.like()
+    return redirect(reverse('news_list'))

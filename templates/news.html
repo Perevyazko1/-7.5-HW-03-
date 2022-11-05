@@ -7,6 +7,9 @@ News
 
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
+{% for category in categories %}
+    <h3>{{ category.name }}</h3>
+{% endfor %}
 <!--<h1>{{ news }}</h1>-->
    <h1> Новостей: {{ news|length }}</h1>
 <!--   <h3>{{ time_now|date:'M d Y' }}</h3>-->
@@ -16,35 +19,34 @@ News
 
     {# Теперь будем проверять не request.user.is_authenticated, а конкретные права #}
     {% if perms.simpleapp.add_news %}
-    <a href="{% url 'news_create' %}">Добавить новость</a>
+        <a href="{% url 'news_create' %}">Добавить новость</a>
     {% endif %}
 
    <hr>
    {% if news %}
 
-
-
         <ul class="list-group-flush">
-           {% for new in news|dictsort:"dateCreation" %}
+            {% for new in news|dictsort:"dateCreation" %}
                 <li class="list-group-item">
-            <small class="fw-bold">{{ new.dateCreation|date:'d M Y' }}</small>
-                       <small class="fw-bold">{{ new.title|censor }}&nbsp;</small>
-                    <small class="fw-bold">категории:
-
-                            {% for category in new.category.all %}
-                            <a href="{% url 'category_list' category.id %}"> {{ category }}</a>
-                        {% endfor %}
-                        </small>
+                <small class="fw-bold">{{ new.dateCreation|date:'d M Y' }}</small>
+                <small class="fw-bold">{{ new.title|censor }}&nbsp;</small> <br>
+                <a href="{% url 'like-post' new.pk %}">Понравилось</a>
+                <b>{{ new.rating }}+</b>
+                <small class="fw-bold">категории:
+                {% for category in new.category.all %}
+                    <a href="{% url 'category_list' category.id %}"> {{ category }}</a>
+                {% endfor %}
+                </small>
                      <p><a href="{% url 'news_detail' new.id %}">{{ new.text|censor|truncatechars:20}}</a></p>
                 </li>
-        </ul>
+                </ul>
                     <td>
                         {# А здесь доступ для каждой ссылки теперь будем проверять отдельно #}
                         {% if perms.simpleapp.change_news %}
-                        <a href="{% url 'news_update' pk=new.id %}">Изменить</a>
+                            <a href="{% url 'news_update' pk=new.id %}">Изменить</a>
                         {% endif %}
                         {% if perms.simpleapp.delete_news %}
-                        <a href="{% url 'news_delete' pk=new.id %}">Удалить</a>
+                            <a href="{% url 'news_delete' pk=new.id %}">Удалить</a>
                         {% endif %}
                     </td>
                 </tr>
